@@ -1,0 +1,77 @@
+> library(ggplot2)
+Use suppressPackageStartupMessages to eliminate package startup messages.
+> library(jpeg)
+> setwd("/Users/mattmurphy/Pictures")
+> img <- readJPEG("mobydisc.jpg")
+> dim(img)
+[1] 170 172   3
+> imgDm <- dim(img)
+> imgRGB <- data.frame(x = rep(1:imgDm[2], each = imgDm[1]),
++ y = rep(imgDm[1]:1, imgDm[2]),
++ R = as.vector(img[,,1]),
++ G = as.vector(img[,,2]),
++ B = as.vector(img[,,3])
++ )
+> head(imgRGB)
+  x   y         R         G         B
+1 1 170 0.8705882 0.8705882 0.8705882
+2 1 169 0.9294118 0.9294118 0.9294118
+3 1 168 0.9450980 0.9450980 0.9450980
+4 1 167 0.9294118 0.9294118 0.9294118
+5 1 166 0.9333333 0.9333333 0.9333333
+6 1 165 0.9372549 0.9372549 0.9372549
+> ggplot(data=imgRGB, aes(x=x,y=y,col=G)) + geom_point()
+> ggplot(data=imgRGB, aes(x=x,y=y,col=rgb(R,G,B)))+geom_point()+scale_color_identity()
+> plotTheme <- function() {
++   theme(
++     panel.background = element_rect(
++       size = 3,
++       colour = "black",
++       fill = "white"),
++     axis.ticks = element_line(
++       size = 2),
++     panel.grid.major = element_line(
++       colour = "gray80",
++       linetype = "dotted"),
++     panel.grid.minor = element_line(
++       colour = "gray90",
++       linetype = "dashed"),
++     axis.title.x = element_text(
++       size = rel(1.2),
++       face = "bold"),
++     axis.title.y = element_text(
++       size = rel(1.2),
++       face = "bold"),
++     plot.title = element_text(
++       size = 20,
++       face = "bold",
++       vjust = 1.5)
++   )
++ }
+> kClusters <- 2
+> kMeans <- kmeans(imgRGB[, c("R", "G", "B")], centers = kClusters)
+> kColors <- rgb(kMeans$centers[kMeans$cluster,])
+> ggplot(data = imgRGB, aes(x = x, y = y)) + 
++ geom_point(colour = kColors) +
++ labs(title = paste("k-Means Clustering of", kClusters, "Colors")) +
++ xlab("x") +
++ ylab("y") + 
++ plotTheme()
+> kClusters <- 4
+> kMeans <- kmeans(imgRGB[, c("R", "G", "B")], centers = kClusters)
+> kColors <- rgb(kMeans$centers[kMeans$cluster,])
+> ggplot(data = imgRGB, aes(x = x, y = y)) + 
++ geom_point(colour = kColors) +
++ labs(title = paste("k-Means Clustering of", kClusters, "Colors")) +
++ xlab("x") +
++ ylab("y") + 
++ plotTheme()
+> kClusters <- 9
+> kMeans <- kmeans(imgRGB[, c("R", "G", "B")], centers = kClusters)
+> kColors <- rgb(kMeans$centers[kMeans$cluster,])
+> ggplot(data = imgRGB, aes(x = x, y = y)) + 
++ geom_point(colour = kColors) +
++ labs(title = paste("k-Means Clustering of", kClusters, "Colors")) +
++ xlab("x") +
++ ylab("y") + 
++ plotTheme()
